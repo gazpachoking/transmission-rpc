@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 from transmission_rpc import constants
 from transmission_rpc.error import TransmissionVersionError
-from transmission_rpc.constants import LOGGER, BaseType
+from transmission_rpc.constants import LOGGER, Type
 
 UNITS = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"]
 
@@ -57,12 +57,12 @@ def rpc_bool(arg: Any) -> int:
 
 
 TR_TYPE_MAP: Dict[str, Callable] = {
-    BaseType.number: int,
-    BaseType.string: str,
-    BaseType.double: float,
-    BaseType.boolean: rpc_bool,
-    BaseType.array: list,
-    BaseType.object: dict,
+    Type.number: int,
+    Type.string: str,
+    Type.double: float,
+    Type.boolean: rpc_bool,
+    Type.array: list,
+    Type.object: dict,
 }
 
 
