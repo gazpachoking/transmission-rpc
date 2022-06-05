@@ -101,12 +101,12 @@ def argument_value_convert(
         while invalid_version:
             invalid_version = False
             replacement = None
-            if rpc_version < info[1]:
+            if rpc_version < info.added_version:
                 invalid_version = True
-                replacement = info[3]
-            if info[2] is not None and info[2] <= rpc_version:
+                replacement = info.previous_argument_name
+            if info.removed_version is not None and info.removed_version <= rpc_version:
                 invalid_version = True
-                replacement = info[4]
+                replacement = info.next_argument_name
             if invalid_version:
                 if replacement:
                     LOGGER.warning(
@@ -120,7 +120,7 @@ def argument_value_convert(
                     raise ValueError(
                         f'Method "{method}" Argument "{argument}" does not exist in version {rpc_version:d}.'
                     )
-        return argument, TR_TYPE_MAP[info[0]](value)
+        return argument, TR_TYPE_MAP[info.type](value)
     raise ValueError(f'Argument "{argument}" does not exists for method "{method}".')
 
 
@@ -164,9 +164,7 @@ def _rpc_version_check(method: str, kwargs: Dict[str, Any], rpc_version: int) ->
             )
 
 
-def _try_read_torrent(  # pylint: disable=R0911
-    torrent: Union[BinaryIO, str, bytes, pathlib.Path]
-) -> Optional[str]:
+def _try_read_torrent(torrent: Union[BinaryIO, str, bytes, pathlib.Path]) -> Optional[str]:  # pylint: disable=R0911
     """
     if torrent should be encoded with base64, return a non-None value.
     """
@@ -178,9 +176,7 @@ def _try_read_torrent(  # pylint: disable=R0911
             return None
 
         if parsed_uri.scheme in ["file"]:
-            warnings.warn(
-                "support for `file://` URL is deprecated.", DeprecationWarning
-            )
+            warnings.warn("support for `file://` URL is deprecated.", DeprecationWarning)
             filepath = torrent
             # uri decoded different on linux / windows ?
             if len(parsed_uri.path) > 0:
